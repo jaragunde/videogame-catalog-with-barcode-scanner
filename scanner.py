@@ -18,7 +18,10 @@ with open("output.csv", mode='a') as csvFile:
     name = sys.stdin.readline()
     print("Product ID", end=": ", flush=True);
     id = sys.stdin.readline()
+    print("Region", end=": ", flush=True);
+    region = sys.stdin.readline()
     print("Comments", end=": ", flush=True);
     comments = sys.stdin.readline()
-    csvWriter.writerow([ean, name.rstrip(), id.rstrip(), comments.rstrip()])
+    csvWriter.writerow([ean, name.rstrip(), id.rstrip(),
+                        region.rstrip().upper(), comments.rstrip()])
 
