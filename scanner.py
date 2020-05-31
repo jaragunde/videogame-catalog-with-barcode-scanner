@@ -4,9 +4,15 @@ import sys, subprocess
 
 proc = subprocess.Popen(["zbarcam", "/dev/video2"],stdout=subprocess.PIPE)
 while True:
-  line = proc.stdout.readline()
-  if not line:
+  ean = proc.stdout.readline()
+  if not ean:
     break
-  
+
+  print("Product name", end=": ", flush=True);
   name = sys.stdin.readline()
-  print(line.decode('UTF-8').rstrip(), ":", name)
+  print("Product ID", end=": ", flush=True);
+  id = sys.stdin.readline()
+  print("Comments", end=": ", flush=True);
+  comments = sys.stdin.readline()
+  print(ean.decode('UTF-8').rstrip(), name.rstrip(), id.rstrip(),
+        comments.rstrip(), sep=",")
