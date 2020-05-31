@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys, subprocess
 
+csvFile = open("output.csv", mode='a')
 
 proc = subprocess.Popen(["zbarcam", "/dev/video2"],stdout=subprocess.PIPE)
 while True:
@@ -15,4 +16,6 @@ while True:
   print("Comments", end=": ", flush=True);
   comments = sys.stdin.readline()
   print(ean.decode('UTF-8').rstrip(), name.rstrip(), id.rstrip(),
-        comments.rstrip(), sep=",")
+        comments.rstrip(), sep=",", file=csvFile)
+
+csvFile.close()
