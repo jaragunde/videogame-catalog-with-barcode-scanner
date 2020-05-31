@@ -2,6 +2,7 @@
 import csv, sys, subprocess
 
 # Configuration
+idPrefix = "BLES-"
 defaultRegion = "ES"
 
 csvFile = open("output.csv", mode='a')
@@ -20,8 +21,8 @@ with open("output.csv", mode='a') as csvFile:
     print("Product name", end=": ", flush=True);
     name = sys.stdin.readline()
 
-    print("Product ID", end=": ", flush=True);
-    id = sys.stdin.readline()
+    print("Product ID [prefix=", idPrefix, "]", sep="", end=": ", flush=True)
+    id = idPrefix + sys.stdin.readline().rstrip()
 
     print("Region [default=", defaultRegion, "]", sep="", end=": ", flush=True)
     region = sys.stdin.readline().rstrip()
@@ -31,6 +32,6 @@ with open("output.csv", mode='a') as csvFile:
     print("Comments", end=": ", flush=True);
     comments = sys.stdin.readline()
 
-    csvWriter.writerow([ean, name.rstrip(), id.rstrip(),
+    csvWriter.writerow([ean, name.rstrip(), id,
                         region.upper(), comments.rstrip()])
 
