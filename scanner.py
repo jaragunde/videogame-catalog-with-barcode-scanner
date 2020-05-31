@@ -7,9 +7,11 @@ proc = subprocess.Popen(["zbarcam", "/dev/video2"],stdout=subprocess.PIPE)
 
 with open("output.csv", mode='a') as csvFile:
   while True:
-    ean = proc.stdout.readline()
-    if not ean:
+    line = proc.stdout.readline()
+    if not line:
       break
+    ean = line.decode('UTF-8').rstrip()
+    print("Code read:", ean)
 
     print("Product name", end=": ", flush=True);
     name = sys.stdin.readline()
@@ -17,6 +19,6 @@ with open("output.csv", mode='a') as csvFile:
     id = sys.stdin.readline()
     print("Comments", end=": ", flush=True);
     comments = sys.stdin.readline()
-    print(ean.decode('UTF-8').rstrip(), name.rstrip(), id.rstrip(),
+    print(ean, name.rstrip(), id.rstrip(),
           comments.rstrip(), sep=",", file=csvFile)
 
