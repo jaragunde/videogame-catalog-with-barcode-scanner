@@ -1,11 +1,12 @@
 #!/usr/bin/env python
-import sys, subprocess
+import csv, sys, subprocess
 
 csvFile = open("output.csv", mode='a')
 
 proc = subprocess.Popen(["zbarcam", "/dev/video2"],stdout=subprocess.PIPE)
 
 with open("output.csv", mode='a') as csvFile:
+  csvWriter = csv.writer(csvFile)
   while True:
     line = proc.stdout.readline()
     if not line:
@@ -19,6 +20,5 @@ with open("output.csv", mode='a') as csvFile:
     id = sys.stdin.readline()
     print("Comments", end=": ", flush=True);
     comments = sys.stdin.readline()
-    print(ean, name.rstrip(), id.rstrip(),
-          comments.rstrip(), sep=",", file=csvFile)
+    csvWriter.writerow([ean, name.rstrip(), id.rstrip(), comments.rstrip()])
 
