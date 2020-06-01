@@ -21,7 +21,7 @@ with open(outputFile, mode='a') as csvFile:
     print("Code read:", ean)
 
     print("Product name", end=": ", flush=True);
-    name = sys.stdin.readline().rstrip()
+    name = sys.stdin.readline().rstrip().title()
 
     print("Product ID [prefix=", idPrefix, "]", sep="", end=": ", flush=True)
     id = idPrefix + sys.stdin.readline().rstrip()
