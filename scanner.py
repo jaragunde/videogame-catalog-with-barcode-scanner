@@ -9,6 +9,10 @@ system = "PS3"
 idPrefix = "BLES-"
 defaultRegion = "ES"
 
+def lookup(ean):
+  ean = ean[-13:] # remove prefix 'EAN-13:'
+  return "found in the internet"
+
 proc = subprocess.Popen(command, stdout=subprocess.PIPE)
 
 with open(outputFile, mode='a') as csvFile:
@@ -20,8 +24,19 @@ with open(outputFile, mode='a') as csvFile:
     ean = line.decode('UTF-8').rstrip()
     print("Code read:", ean)
 
-    print("Product name", end=": ", flush=True);
+    print("Searching UPC database...", end=" ", flush=True)
+    searchResult = lookup(ean)
+    message = ""
+    if searchResult:
+      print("Match!")
+      message = " [default=" + searchResult + "]"
+    else:
+      print("Not found")
+
+    print("Product name", message, sep="", end=": ", flush=True);
     name = sys.stdin.readline().rstrip().title()
+    if not name and searchResult:
+      name = searchResult.title()
 
     print("Product ID [prefix=", idPrefix, "]", sep="", end=": ", flush=True)
     id = idPrefix + sys.stdin.readline().rstrip()
