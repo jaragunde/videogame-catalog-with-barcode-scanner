@@ -3,6 +3,7 @@ import csv, sys, subprocess
 
 # Configuration
 command = ["zbarcam", "/dev/video2"]
+#command = ["./fake-code.py"]
 outputFile = "ps3.csv"
 system = "PS3"
 idPrefix = "BLES-"
