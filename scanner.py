@@ -2,13 +2,13 @@
 import csv, sys, subprocess
 
 # Configuration
-videoDevice = "/dev/video2"
+command = ["zbarcam", "/dev/video2"]
 outputFile = "ps3.csv"
 system = "PS3"
 idPrefix = "BLES-"
 defaultRegion = "ES"
 
-proc = subprocess.Popen(["zbarcam", videoDevice],stdout=subprocess.PIPE)
+proc = subprocess.Popen(command, stdout=subprocess.PIPE)
 
 with open(outputFile, mode='a') as csvFile:
   csvWriter = csv.writer(csvFile)
