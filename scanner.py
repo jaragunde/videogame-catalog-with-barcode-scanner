@@ -4,6 +4,7 @@ import csv, sys, subprocess
 # Configuration
 videoDevice = "/dev/video2"
 outputFile = "ps3.csv"
+system = "PS3"
 idPrefix = "BLES-"
 defaultRegion = "ES"
 
@@ -32,5 +33,5 @@ with open(outputFile, mode='a') as csvFile:
     print("Comments", end=": ", flush=True);
     comments = sys.stdin.readline().rstrip()
 
-    csvWriter.writerow([ean, name, id, region, comments])
+    csvWriter.writerow([system, ean, name, id, region, comments])
 
