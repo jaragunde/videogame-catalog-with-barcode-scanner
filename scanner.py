@@ -19,19 +19,18 @@ with open(outputFile, mode='a') as csvFile:
     print("Code read:", ean)
 
     print("Product name", end=": ", flush=True);
-    name = sys.stdin.readline()
+    name = sys.stdin.readline().rstrip()
 
     print("Product ID [prefix=", idPrefix, "]", sep="", end=": ", flush=True)
     id = idPrefix + sys.stdin.readline().rstrip()
 
     print("Region [default=", defaultRegion, "]", sep="", end=": ", flush=True)
-    region = sys.stdin.readline().rstrip()
+    region = sys.stdin.readline().rstrip().upper()
     if not region:
       region = defaultRegion
 
     print("Comments", end=": ", flush=True);
-    comments = sys.stdin.readline()
+    comments = sys.stdin.readline().rstrip()
 
-    csvWriter.writerow([ean, name.rstrip(), id,
-                        region.upper(), comments.rstrip()])
+    csvWriter.writerow([ean, name, id, region, comments])
 
