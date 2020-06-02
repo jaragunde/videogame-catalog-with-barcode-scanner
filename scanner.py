@@ -17,38 +17,41 @@ def saveCSVRow(outputFile, row):
   with open(outputFile, mode='a') as csvFile:
     csv.writer(csvFile).writerow(row)
 
-with subprocess.Popen(command, stdout=subprocess.PIPE) as proc:
-  while True:
-    line = proc.stdout.readline()
-    if not line:
-      break
-    ean = line.decode('UTF-8').rstrip()
-    print("Code read:", ean)
+def main():
+  with subprocess.Popen(command, stdout=subprocess.PIPE) as proc:
+    while True:
+      line = proc.stdout.readline()
+      if not line:
+        break
+      ean = line.decode('UTF-8').rstrip()
+      print("Code read:", ean)
 
-    print("Searching UPC database...", end=" ", flush=True)
-    searchResult = lookup(ean)
-    message = ""
-    if searchResult:
-      print("Match!")
-      message = " [default=" + searchResult + "]"
-    else:
-      print("Not found")
+      print("Searching UPC database...", end=" ", flush=True)
+      searchResult = lookup(ean)
+      defaultName = ""
+      if searchResult:
+        print("Match!")
+        defaultName = " [default=" + searchResult + "]"
+      else:
+        print("Not found")
 
-    print("Product name", message, sep="", end=": ", flush=True);
-    name = sys.stdin.readline().rstrip().title()
-    if not name and searchResult:
-      name = searchResult.title()
+      print("Product name", defaultName, sep="", end=": ", flush=True);
+      name = sys.stdin.readline().rstrip().title()
+      if not name and searchResult:
+        name = searchResult.title()
 
-    print("Product ID [prefix=", idPrefix, "]", sep="", end=": ", flush=True)
-    id = idPrefix + sys.stdin.readline().rstrip()
+      print("Product ID [prefix=", idPrefix, "]", sep="", end=": ", flush=True)
+      id = idPrefix + sys.stdin.readline().rstrip()
 
-    print("Region [default=", defaultRegion, "]", sep="", end=": ", flush=True)
-    region = sys.stdin.readline().rstrip().upper()
-    if not region:
-      region = defaultRegion
+      print("Region [default=", defaultRegion, "]", sep="", end=": ", flush=True)
+      region = sys.stdin.readline().rstrip().upper()
+      if not region:
+        region = defaultRegion
 
-    print("Comments", end=": ", flush=True);
-    comments = sys.stdin.readline().rstrip()
+      print("Comments", end=": ", flush=True);
+      comments = sys.stdin.readline().rstrip()
 
-    saveCSVRow(outputFile, [system, ean, name, id, region, comments])
+      saveCSVRow(outputFile, [system, ean, name, id, region, comments])
 
+if __name__ == "__main__":
+  main()
