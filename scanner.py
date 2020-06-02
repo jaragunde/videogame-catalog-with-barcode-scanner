@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import csv, sys, subprocess
+import csv, sys, subprocess, xmlrpc.client
 
 # Configuration
 command = ["zbarcam", "/dev/video2"]
@@ -8,10 +8,22 @@ outputFile = "ps3.csv"
 system = "PS3"
 idPrefix = "BLES-"
 defaultRegion = "ES"
+rpc_key = '' # obtain it at upcdatabase.com
 
 def lookup(ean):
   ean = ean[-13:] # remove prefix 'EAN-13:'
-  return "found in the internet"
+  # This is an example of a successful response:
+  # {'found': True, 'size': 'PS3', 'message': 'Database entry found',
+  #  'description': 'metal gear solid 4 guns of the patriots',
+  #  'status': 'success', 'issuerCountryCode': 'de', 'issuerCountry': 'Germany',
+  #  'ean': '4012927051122', 'pendingUpdates': 0,
+  #  'lastModifiedUTC': DateTime, 'noCacheAfterUTC': DateTime}
+  with xmlrpc.client.ServerProxy("https://www.upcdatabase.com/xmlrpc") as proxy:
+    params = {"rpc_key": rpc_key, "ean": ean}
+    result = proxy.lookup(params)
+    if result["status"] == "success" and result["found"]:
+      return result["description"]
+    return False
 
 def regionFromWiiId(id):
   # Wii ids are like RVL-RSRP-UKV, where the last three letters
