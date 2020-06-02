@@ -13,10 +13,11 @@ def lookup(ean):
   ean = ean[-13:] # remove prefix 'EAN-13:'
   return "found in the internet"
 
-proc = subprocess.Popen(command, stdout=subprocess.PIPE)
+def saveCSVRow(outputFile, row):
+  with open(outputFile, mode='a') as csvFile:
+    csv.writer(csvFile).writerow(row)
 
-with open(outputFile, mode='a') as csvFile:
-  csvWriter = csv.writer(csvFile)
+with subprocess.Popen(command, stdout=subprocess.PIPE) as proc:
   while True:
     line = proc.stdout.readline()
     if not line:
@@ -49,5 +50,5 @@ with open(outputFile, mode='a') as csvFile:
     print("Comments", end=": ", flush=True);
     comments = sys.stdin.readline().rstrip()
 
-    csvWriter.writerow([system, ean, name, id, region, comments])
+    saveCSVRow(outputFile, [system, ean, name, id, region, comments])
 
