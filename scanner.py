@@ -13,6 +13,11 @@ def lookup(ean):
   ean = ean[-13:] # remove prefix 'EAN-13:'
   return "found in the internet"
 
+def regionFromWiiId(id):
+  # Wii ids are like RVL-RSRP-UKV, where the last three letters
+  # apparently represent the region (e.g. UKV, ESP, EUR)
+  return id[-3:]
+
 def saveCSVRow(outputFile, row):
   with open(outputFile, mode='a') as csvFile:
     csv.writer(csvFile).writerow(row)
@@ -41,7 +46,11 @@ def main():
         name = searchResult.title()
 
       print("Product ID [prefix=", idPrefix, "]", sep="", end=": ", flush=True)
-      id = idPrefix + sys.stdin.readline().rstrip()
+      id = idPrefix + sys.stdin.readline().rstrip().upper()
+
+      if system == "Wii":
+        global defaultRegion
+        defaultRegion = regionFromWiiId(id)
 
       print("Region [default=", defaultRegion, "]", sep="", end=": ", flush=True)
       region = sys.stdin.readline().rstrip().upper()
