@@ -43,16 +43,17 @@ def main():
       ean = line.decode('UTF-8').rstrip()
       print("Code read:", ean)
 
-      print("Searching UPC database...", end=" ", flush=True)
-      searchResult = lookup(ean)
-      defaultName = ""
-      if searchResult:
-        print("Match!")
-        defaultName = " [default=" + searchResult + "]"
-      else:
-        print("Not found")
+      defaultNameMessage = ""
+      if rpc_key:
+        print("Searching UPC database...", end=" ", flush=True)
+        searchResult = lookup(ean)
+        if searchResult:
+          print("Match!")
+          defaultNameMessage = " [default=" + searchResult + "]"
+        else:
+          print("Not found")
 
-      print("Product name", defaultName, sep="", end=": ", flush=True);
+      print("Product name", defaultNameMessage, sep="", end=": ", flush=True);
       name = sys.stdin.readline().rstrip().title()
       if not name and searchResult:
         name = searchResult.title()
