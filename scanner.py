@@ -53,13 +53,18 @@ def main():
         else:
           print("Not found")
 
+      print("Product ID [prefix=", idPrefix, "]", sep="", end=": ", flush=True)
+      input = sys.stdin.readline().rstrip().upper()
+      if system == "PS3" and (
+          input.startswith("BCES") or input.startswith("BLES")):
+        id = input
+      else:
+        id = idPrefix + input
+
       print("Product name", defaultNameMessage, sep="", end=": ", flush=True);
       name = sys.stdin.readline().rstrip().title()
       if not name and searchResult:
         name = searchResult.title()
-
-      print("Product ID [prefix=", idPrefix, "]", sep="", end=": ", flush=True)
-      id = idPrefix + sys.stdin.readline().rstrip().upper()
 
       if system == "Wii":
         global defaultRegion
