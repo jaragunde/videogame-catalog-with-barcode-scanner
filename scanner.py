@@ -37,6 +37,7 @@ def saveCSVRow(outputFile, row):
 def main():
   with subprocess.Popen(command, stdout=subprocess.PIPE) as proc:
     while True:
+      print("Waiting for barcode scanner...")
       line = proc.stdout.readline()
       if not line:
         break
@@ -79,6 +80,7 @@ def main():
       comments = sys.stdin.readline().rstrip()
 
       saveCSVRow(outputFile, [system, ean, name, id, region, comments])
+      print("Saved to", outputFile)
 
 if __name__ == "__main__":
   main()
