@@ -1,14 +1,27 @@
 #!/usr/bin/env python
 import csv, sys, subprocess, xmlrpc.client
 
-# Configuration
+##### Configuration
+
+# General setup
 command = ["zbarcam", "/dev/video2"]
 #command = ["./fake-code.py"]
-outputFile = "ps3.csv"
+outputFile = "output.csv"
+rpc_key = '' # obtain it at upcdatabase.com
+
+# Per-system defaults: leave only one of the above
+
+# PS3 defaults
 system = "PS3"
 idPrefix = "BLES-"
 defaultRegion = "ES"
-rpc_key = '' # obtain it at upcdatabase.com
+
+# Wii defaults
+system = "Wii"
+idPrefix = "RVL-"
+defaultRegion = "ESP"
+
+##### End configuration
 
 def lookup(ean):
   ean = ean[-13:] # remove prefix 'EAN-13:'
