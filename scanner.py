@@ -25,7 +25,8 @@ defaultRegion = "ESP"
 ##### End configuration
 
 def lookup(ean):
-  ean = ean[-13:] # remove prefix 'EAN-13:'
+  if ean.startswith("EAN-13:"):
+    ean = ean[-13:] # the service does not expect this prefix
   # This is an example of a successful response:
   # {'found': True, 'size': 'PS3', 'message': 'Database entry found',
   #  'description': 'metal gear solid 4 guns of the patriots',
