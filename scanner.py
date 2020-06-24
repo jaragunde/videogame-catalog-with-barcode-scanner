@@ -48,52 +48,52 @@ def saveCSVRow(outputFile, row):
     csv.writer(csvFile).writerow(row)
 
 def processEntry(eanInputFile):
-      print("Waiting for barcode scanner...")
-      line = eanInputFile.readline()
-      if not line:
-        return False
-      ean = line.decode('UTF-8').rstrip()
-      print("Code read:", ean)
+  print("Waiting for barcode scanner...")
+  line = eanInputFile.readline()
+  if not line:
+    return False
+  ean = line.decode('UTF-8').rstrip()
+  print("Code read:", ean)
 
-      defaultNameMessage = ""
-      if rpc_key:
-        print("Searching UPC database...", end=" ", flush=True)
-        searchResult = lookup(ean)
-        if searchResult:
-          print("Match!")
-          defaultNameMessage = " [default=" + searchResult + "]"
-        else:
-          print("Not found")
+  defaultNameMessage = ""
+  if rpc_key:
+    print("Searching UPC database...", end=" ", flush=True)
+    searchResult = lookup(ean)
+    if searchResult:
+      print("Match!")
+      defaultNameMessage = " [default=" + searchResult + "]"
+    else:
+      print("Not found")
 
-      print("Product ID [prefix=", idPrefix, "]", sep="", end=": ", flush=True)
-      input = sys.stdin.readline().rstrip().upper()
-      if system == "PS3" and (
-          input.startswith("BCES") or input.startswith("BLES")):
-        id = input
-      else:
-        id = idPrefix + input
+  print("Product ID [prefix=", idPrefix, "]", sep="", end=": ", flush=True)
+  input = sys.stdin.readline().rstrip().upper()
+  if system == "PS3" and (
+      input.startswith("BCES") or input.startswith("BLES")):
+    id = input
+  else:
+    id = idPrefix + input
 
-      print("Product name", defaultNameMessage, sep="", end=": ", flush=True);
-      name = sys.stdin.readline().rstrip().title()
-      if not name and searchResult:
-        name = searchResult.title()
+  print("Product name", defaultNameMessage, sep="", end=": ", flush=True);
+  name = sys.stdin.readline().rstrip().title()
+  if not name and searchResult:
+    name = searchResult.title()
 
-      if system == "Wii":
-        global defaultRegion
-        defaultRegion = regionFromWiiId(id)
+  if system == "Wii":
+    global defaultRegion
+    defaultRegion = regionFromWiiId(id)
 
-      print("Region [default=", defaultRegion, "]", sep="", end=": ", flush=True)
-      region = sys.stdin.readline().rstrip().upper()
-      if not region:
-        region = defaultRegion
+  print("Region [default=", defaultRegion, "]", sep="", end=": ", flush=True)
+  region = sys.stdin.readline().rstrip().upper()
+  if not region:
+    region = defaultRegion
 
-      print("Comments", end=": ", flush=True);
-      comments = sys.stdin.readline().rstrip()
+  print("Comments", end=": ", flush=True);
+  comments = sys.stdin.readline().rstrip()
 
-      saveCSVRow(outputFile, [system, ean, name, id, region, comments])
-      print("Saved to", outputFile)
+  saveCSVRow(outputFile, [system, ean, name, id, region, comments])
+  print("Saved to", outputFile)
 
-      return True
+  return True
 
 def main():
   with subprocess.Popen(command, stdout=subprocess.PIPE) as proc:
