@@ -47,13 +47,11 @@ def saveCSVRow(outputFile, row):
   with open(outputFile, mode='a') as csvFile:
     csv.writer(csvFile).writerow(row)
 
-def main():
-  with subprocess.Popen(command, stdout=subprocess.PIPE) as proc:
-    while True:
+def processEntry(eanInputFile):
       print("Waiting for barcode scanner...")
-      line = proc.stdout.readline()
+      line = eanInputFile.readline()
       if not line:
-        break
+        return False
       ean = line.decode('UTF-8').rstrip()
       print("Code read:", ean)
 
@@ -94,6 +92,15 @@ def main():
 
       saveCSVRow(outputFile, [system, ean, name, id, region, comments])
       print("Saved to", outputFile)
+
+      return True
+
+def main():
+  with subprocess.Popen(command, stdout=subprocess.PIPE) as proc:
+    while processEntry(proc.stdout):
+      # Loop until there's no more ean data from subprocess
+      pass
+
 
 if __name__ == "__main__":
   try:
