@@ -4,8 +4,9 @@ import csv, sys, subprocess, xmlrpc.client
 ##### Configuration
 
 # General setup
-command = ["zbarcam", "/dev/video2"]
-#command = ["./fake-code.py"]
+command = ["zbarcam", "/dev/video2"] # Fetch EANs with the zbarcam tool
+#command = ["./fake-code.py"] # Fake EAN generation, useful for testing
+#command = False # Set False to type EANs manually
 outputFile = "output.csv"
 rpc_key = '' # obtain it at upcdatabase.com
 
@@ -48,11 +49,10 @@ def saveCSVRow(outputFile, row):
     csv.writer(csvFile).writerow(row)
 
 def processEntry(eanInputFile):
-  print("Waiting for barcode scanner...")
   line = eanInputFile.readline()
   if not line:
     return False
-  ean = line.decode('UTF-8').rstrip()
+  ean = line.rstrip()
   print("Code read:", ean)
 
   defaultNameMessage = ""
@@ -96,10 +96,18 @@ def processEntry(eanInputFile):
   return True
 
 def main():
-  with subprocess.Popen(command, stdout=subprocess.PIPE) as proc:
-    while processEntry(proc.stdout):
-      # Loop until there's no more ean data from subprocess
-      pass
+  if command:
+    with subprocess.Popen(command, stdout=subprocess.PIPE,
+        encoding='UTF-8') as proc:
+      while True:
+        print("Waiting for barcode scanner...")
+        # Loop until there's no more ean data from subprocess
+        if not processEntry(proc.stdout):
+          break
+  else:
+    while True:
+      print("EAN code", end=": ", flush=True)
+      processEntry(sys.stdin)
 
 
 if __name__ == "__main__":
