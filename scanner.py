@@ -50,10 +50,9 @@ def saveCSVRow(outputFile, row):
     csv.writer(csvFile).writerow(row)
 
 def processEntry(eanInputFile):
-  line = eanInputFile.readline()
-  if not line:
+  ean = eanInputFile.readline().rstrip()
+  if not ean:
     return False
-  ean = line.rstrip()
   print("Code read:", ean)
 
   defaultNameMessage = ""
@@ -107,8 +106,9 @@ def main():
           break
   else:
     while True:
-      print("EAN code", end=": ", flush=True)
-      processEntry(sys.stdin)
+      print("EAN code (empty to exit)", end=": ", flush=True)
+      if not processEntry(sys.stdin):
+        break
 
 
 if __name__ == "__main__":
