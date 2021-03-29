@@ -68,7 +68,8 @@ def processEntry(eanInputFile):
   print("Product ID [prefix=", idPrefix, "]", sep="", end=": ", flush=True)
   input = sys.stdin.readline().rstrip().upper()
   if system == "PS3" and (
-      input.startswith("BCES") or input.startswith("BLES")):
+      input.startswith("BCES") or input.startswith("BLES") or
+      input.startswith("BCUS") or input.startswith("BLUS")):
     id = input
   else:
     id = idPrefix + input
