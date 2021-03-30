@@ -55,7 +55,8 @@ def processEntry(eanInputFile):
     return False
   print("Code read:", ean)
 
-  defaultNameMessage = ""
+  defaultNameMessage = " (empty to skip)"
+  searchResult = False
   if rpc_key:
     print("Searching UPC database...", end=" ", flush=True)
     searchResult = lookup(ean)
@@ -76,8 +77,12 @@ def processEntry(eanInputFile):
 
   print("Product name", defaultNameMessage, sep="", end=": ", flush=True);
   name = sys.stdin.readline().rstrip().title()
-  if not name and searchResult:
-    name = searchResult.title()
+  if not name:
+    if searchResult:
+      name = searchResult.title()
+    else:
+      # skip to next EAN
+      return True
 
   if system == "Wii":
     global defaultRegion
