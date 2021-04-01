@@ -43,16 +43,16 @@ def lookup(ean):
       return result["description"]
     return False
 
-def searchOnMobyGames(ean):
+def searchOnMobyGames(searchString):
   # Makes use of DuckDuckGo !bang API.
   print("Searching MobyGames, powered by DuckDuckGo...", end=" ",
       flush=True)
-  if ean.startswith("EAN-13:"):
-    ean = ean[-13:] # the service does not expect this prefix
+  if searchString.startswith("EAN-13:"):
+    searchString = searchString[-13:] # the service does not expect this prefix
 
   ddgRequest = requests.get(
       "https://api.duckduckgo.com/?q=!mobygames+{}&no_redirect=1&format=json"
-      .format(ean))
+      .format(searchString))
   mobyRequest = requests.get(ddgRequest.json()["Redirect"])
   parsedSite = BeautifulSoup(mobyRequest.text, "html.parser")
 
@@ -111,6 +111,14 @@ def processEntry(eanInputFile):
     id = input
   else:
     id = idPrefix + input
+
+  if not searchResult and mobyGamesSearchOn:
+    searchResult = searchOnMobyGames(id)
+    if searchResult:
+      print("Match!")
+      defaultNameMessage = " [default=" + searchResult + "]"
+    else:
+      print("Not found")
 
   print("Product name", defaultNameMessage, sep="", end=": ", flush=True);
   name = sys.stdin.readline().rstrip().title()
