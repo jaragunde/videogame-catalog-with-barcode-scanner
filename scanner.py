@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-import csv, sys, subprocess, xmlrpc.client
+import csv, requests, sys, subprocess, xmlrpc.client
+from bs4 import BeautifulSoup
 
 ##### Configuration
 
@@ -9,6 +10,7 @@ command = ["zbarcam", "/dev/video2"] # Fetch EANs with the zbarcam tool
 #command = False # Set False to type EANs manually
 outputFile = "output.csv"
 rpc_key = '' # obtain it at upcdatabase.com
+mobyGamesSearchOn = True
 
 # Per-system defaults: leave only one of the above
 
@@ -25,6 +27,7 @@ defaultRegion = "ESP"
 ##### End configuration
 
 def lookup(ean):
+  print("Searching UPC database...", end=" ", flush=True)
   if ean.startswith("EAN-13:"):
     ean = ean[-13:] # the service does not expect this prefix
   # This is an example of a successful response:
@@ -39,6 +42,33 @@ def lookup(ean):
     if result["status"] == "success" and result["found"]:
       return result["description"]
     return False
+
+def searchOnMobyGames(ean):
+  # Makes use of DuckDuckGo !bang API.
+  print("Searching MobyGames, powered by DuckDuckGo...", end=" ",
+      flush=True)
+  if ean.startswith("EAN-13:"):
+    ean = ean[-13:] # the service does not expect this prefix
+
+  ddgRequest = requests.get(
+      "https://api.duckduckgo.com/?q=!mobygames+{}&no_redirect=1&format=json"
+      .format(ean))
+  mobyRequest = requests.get(ddgRequest.json()["Redirect"])
+  parsedSite = BeautifulSoup(mobyRequest.text, "html.parser")
+
+  titles = parsedSite.find_all("title")
+  if (len(titles) > 0):
+    siteTitle = titles[0].getText()
+    if siteTitle == "Quick Search":
+      # No results found
+      return False
+
+    siteTitle = siteTitle[:-12] # remove " - MobyGames" suffix from title
+    if system == "PS3":
+      siteTitle = siteTitle[:-25] # remove " for PlayStation 3 (20xx)" suffix
+    return siteTitle
+
+  return False
 
 def regionFromWiiId(id):
   # Wii ids are like RVL-RSRP-UKV, where the last three letters
@@ -58,8 +88,15 @@ def processEntry(eanInputFile):
   defaultNameMessage = " (empty to skip)"
   searchResult = False
   if rpc_key:
-    print("Searching UPC database...", end=" ", flush=True)
     searchResult = lookup(ean)
+    if searchResult:
+      print("Match!")
+      defaultNameMessage = " [default=" + searchResult + "]"
+    else:
+      print("Not found")
+
+  if not searchResult and mobyGamesSearchOn:
+    searchResult = searchOnMobyGames(ean)
     if searchResult:
       print("Match!")
       defaultNameMessage = " [default=" + searchResult + "]"
