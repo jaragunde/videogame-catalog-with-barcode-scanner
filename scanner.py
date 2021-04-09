@@ -26,6 +26,16 @@ defaultRegion = "ESP"
 
 ##### End configuration
 
+# Known product ID prefixes: when typed by the user in the product ID entry,
+# they override the default idPrefix configured per system
+knownIdPrefixes = [
+  "BCES", # 1st-party, European region PS3 game
+  "BLES", # 3rd-party, European region PS3 game
+  "BCUS", # 1st-party, US region PS3 game
+  "BLUS", # 3rd-party, US region PS3 game
+  "RVL-", # Wii game (all regions) - force to 4 chars to make our code easier
+]
+
 def lookup(ean):
   print("Searching UPC database...", end=" ", flush=True)
   if ean.startswith("EAN-13:"):
@@ -110,9 +120,7 @@ def processEntry(eanInputFile):
 
   print("Product ID [prefix=", idPrefix, "]", sep="", end=": ", flush=True)
   input = sys.stdin.readline().rstrip().upper()
-  if system == "PS3" and (
-      input.startswith("BCES") or input.startswith("BLES") or
-      input.startswith("BCUS") or input.startswith("BLUS")):
+  if input[:4] in knownIdPrefixes:
     id = input
   else:
     id = idPrefix + input
