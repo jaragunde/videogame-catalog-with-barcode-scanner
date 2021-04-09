@@ -19,6 +19,16 @@ system = "PS3"
 idPrefix = "BLES-"
 defaultRegion = "ES"
 
+# PS4 defaults
+system = "PS4"
+idPrefix = "CUSA-"
+defaultRegion = "ES"
+
+# PSP defaults
+system = "PSP"
+idPrefix = "ULES-"
+defaultRegion = "ES"
+
 # Wii defaults
 system = "Wii"
 idPrefix = "RVL-"
@@ -33,6 +43,9 @@ knownIdPrefixes = [
   "BLES", # 3rd-party, European region PS3 game
   "BCUS", # 1st-party, US region PS3 game
   "BLUS", # 3rd-party, US region PS3 game
+  "CUSA", # European region PS4 game
+  "UCES", # 1st-party, European region PSP game
+  "ULES", # 3rd-party, European region PSP game
   "RVL-", # Wii game (all regions) - force to 4 chars to make our code easier
 ]
 
