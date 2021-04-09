@@ -92,8 +92,10 @@ def searchOnMobyGames(searchString):
       return False
 
     siteTitle = siteTitle[:-12] # remove " - MobyGames" suffix from title
-    if system == "PS3":
+    if system == "PS3" or system == "PS4":
       siteTitle = siteTitle[:-25] # remove " for PlayStation 3 (20xx)" suffix
+    if system == "PSP":
+      siteTitle = siteTitle[:-15] # remove " for PSP (20xx)" suffix
     return siteTitle
 
   return False
