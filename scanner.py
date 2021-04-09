@@ -50,17 +50,22 @@ def searchOnMobyGames(searchString):
   if searchString.startswith("EAN-13:"):
     searchString = searchString[-13:] # the service does not expect this prefix
 
+  # DDG returns the actual URL of the MobyGames search service in the "Redirect"
+  # field, we get this URL and do a new request with it
   ddgRequest = requests.get(
       "https://api.duckduckgo.com/?q=!mobygames+{}&no_redirect=1&format=json"
       .format(searchString))
   mobyRequest = requests.get(ddgRequest.json()["Redirect"])
   parsedSite = BeautifulSoup(mobyRequest.text, "html.parser")
 
+  # We expect that MobyGames gives us the page dedicated to the game when the
+  # search is successful; then we parse the <title> tag to get it
   titles = parsedSite.find_all("title")
   if (len(titles) > 0):
     siteTitle = titles[0].getText()
     if siteTitle == "Quick Search":
-      # No results found
+      # We did not get the game page but the search page instead, it means no
+      # results were found
       return False
 
     siteTitle = siteTitle[:-12] # remove " - MobyGames" suffix from title
