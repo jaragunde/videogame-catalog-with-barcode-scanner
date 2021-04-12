@@ -15,39 +15,45 @@ mobyGamesSearchOn = True
 # Per-system defaults: leave only one of the above
 
 # PS3 defaults
-system = "PS3"
-idPrefix = "BLES-"
 defaultRegion = "ES"
 
 # PS4 defaults
-system = "PS4"
-idPrefix = "CUSA-"
 defaultRegion = "ES"
 
 # PSP defaults
-system = "PSP"
-idPrefix = "ULES-"
 defaultRegion = "ES"
 
 # Wii defaults
-system = "Wii"
-idPrefix = "RVL-"
 defaultRegion = "ESP"
 
 ##### End configuration
 
+# Globals
+
+system = ""
+lastIdPrefix = ""
+
 # Known product ID prefixes: when typed by the user in the product ID entry,
 # they override the default idPrefix configured per system
-knownIdPrefixes = [
-  "BCES", # 1st-party, European region PS3 game
-  "BLES", # 3rd-party, European region PS3 game
-  "BCUS", # 1st-party, US region PS3 game
-  "BLUS", # 3rd-party, US region PS3 game
-  "CUSA", # European region PS4 game
-  "UCES", # 1st-party, European region PSP game
-  "ULES", # 3rd-party, European region PSP game
-  "RVL-", # Wii game (all regions) - force to 4 chars to make our code easier
-]
+
+knownIdPrefixesPerSystem = {
+  "PS3": [
+    "BCES", # 1st-party, European region
+    "BLES", # 3rd-party, European region
+    "BCUS", # 1st-party, US region
+    "BLUS", # 3rd-party, US region
+  ],
+  "PS4": [
+    "CUSA", # European region
+  ],
+  "PSP": [
+    "UCES", # 1st-party, European region
+    "ULES", # 3rd-party, European region
+  ],
+  "Wii": [
+    "RVL", # all regions
+  ],
+}
 
 def lookup(ean):
   print("Searching UPC database...", end=" ", flush=True)
@@ -133,12 +139,30 @@ def processEntry(eanInputFile):
     else:
       print("Not found")
 
-  print("Product ID [prefix=", idPrefix, "]", sep="", end=": ", flush=True)
+  global lastIdPrefix
+  print("Product ID [prefix=", lastIdPrefix, "]", sep="", end=": ", flush=True)
   input = sys.stdin.readline().rstrip().upper()
-  if input[:4] in knownIdPrefixes:
-    id = input
-  else:
-    id = idPrefix + input
+
+  # identify system from product ID prefix
+  found = False
+  global system
+  for knownSystem, knownPrefixes in knownIdPrefixesPerSystem.items():
+    if input[:4] in knownPrefixes:
+      found = True
+      id = input
+      system = knownSystem
+      lastIdPrefix = input[:4]
+      break
+
+    if input[:3] in knownPrefixes:
+      found = True
+      id = input
+      system = knownSystem
+      lastIdPrefix = input[:3]
+      break
+
+  if not found:
+    id = lastIdPrefix + "-" + input
 
   if not searchResult and mobyGamesSearchOn:
     searchResult = searchOnMobyGames(id)
