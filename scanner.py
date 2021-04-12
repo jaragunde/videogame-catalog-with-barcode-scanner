@@ -136,20 +136,25 @@ def processEntry(eanInputFile):
   for knownSystem, knownPrefixes in knownIdPrefixesPerSystem.items():
     if input[:4] in knownPrefixes:
       found = True
-      id = input
       system = knownSystem
       lastIdPrefix = input[:4]
       break
 
     if input[:3] in knownPrefixes:
       found = True
-      id = input
       system = knownSystem
       lastIdPrefix = input[:3]
       break
 
-  if not found:
+  if not found and lastIdPrefix != "":
     id = lastIdPrefix + "-" + input
+  else:
+    id = input
+
+  if system == "":
+    print("Cannot guess system from product ID, please type", end=": ",
+        flush=True)
+    system = sys.stdin.readline().rstrip()
 
   if not searchResult and mobyGamesSearchOn:
     searchResult = searchOnMobyGames(id)
