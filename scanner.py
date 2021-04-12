@@ -11,20 +11,7 @@ command = ["zbarcam", "/dev/video2"] # Fetch EANs with the zbarcam tool
 outputFile = "output.csv"
 rpc_key = '' # obtain it at upcdatabase.com
 mobyGamesSearchOn = True
-
-# Per-system defaults: leave only one of the above
-
-# PS3 defaults
 defaultRegion = "ES"
-
-# PS4 defaults
-defaultRegion = "ES"
-
-# PSP defaults
-defaultRegion = "ES"
-
-# Wii defaults
-defaultRegion = "ESP"
 
 ##### End configuration
 
@@ -181,14 +168,16 @@ def processEntry(eanInputFile):
       # skip to next EAN
       return True
 
+  global defaultRegion
   if system == "Wii":
-    global defaultRegion
     defaultRegion = regionFromWiiId(id)
 
   print("Region [default=", defaultRegion, "]", sep="", end=": ", flush=True)
   region = sys.stdin.readline().rstrip().upper()
   if not region:
     region = defaultRegion
+  else:
+    defaultRegion = region
 
   print("Comments", end=": ", flush=True);
   comments = sys.stdin.readline().rstrip()
