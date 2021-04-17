@@ -16,14 +16,15 @@ defaultRegion = "ES"
 ##### End configuration
 
 # Globals
-
 system = ""
 lastIdPrefix = ""
 
-# Known product ID prefixes: when typed by the user in the product ID entry,
-# they override the default idPrefix configured per system
-
+# Known product ID prefixes, used to identify the system
 knownIdPrefixesPerSystem = {
+  "PS2": [
+    "SCES", # 1st-party, European region
+    "SLES", # 3rd-party, European region
+  ],
   "PS3": [
     "BCES", # 1st-party, European region
     "BLES", # 3rd-party, European region
