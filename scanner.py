@@ -38,8 +38,14 @@ knownIdPrefixesPerSystem = {
     "UCES", # 1st-party, European region
     "ULES", # 3rd-party, European region
   ],
+  "GC": [
+    "DOL", # all regions
+  ],
   "Wii": [
     "RVL", # all regions
+  ],
+  "WiiU": [
+    "WUP", # all regions
   ],
 }
 
@@ -94,8 +100,8 @@ def searchOnMobyGames(searchString):
 
   return False
 
-def regionFromWiiId(id):
-  # Wii ids are like RVL-RSRP-UKV, where the last three letters
+def regionFromNintendoId(id):
+  # Nintendo ids are like RVL-RSRP-UKV, where the last three letters
   # apparently represent the region (e.g. UKV, ESP, EUR)
   return id[-3:]
 
@@ -175,8 +181,8 @@ def processEntry(eanInputFile):
       return True
 
   global defaultRegion
-  if system == "Wii":
-    defaultRegion = regionFromWiiId(id)
+  if system in ["GC","Wii","WiiU"]:
+    defaultRegion = regionFromNintendoId(id)
 
   print("Region [default=", defaultRegion, "]", sep="", end=": ", flush=True)
   region = sys.stdin.readline().rstrip().upper()
