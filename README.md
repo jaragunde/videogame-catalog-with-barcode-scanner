@@ -10,7 +10,11 @@ How to use
 ----------
 
 Open the `scanner.py` script and modify the `# Configuration` section in the
-beginning according to your needs. Then run from your terminal.
+beginning according to your needs. Then run from your terminal, passing the
+output file name as argument. Example:
+```
+$ ./scanner.py mygamedb.csv
+```
 
 Scan a code, then you will be prompted for the name of the item, its id,
 description and some comments. You can leave some fields blank, they would

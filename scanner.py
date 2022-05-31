@@ -8,7 +8,6 @@ from bs4 import BeautifulSoup
 command = ["zbarcam", "/dev/video2"] # Fetch EANs with the zbarcam tool
 #command = ["./fake-code.py"] # Fake EAN generation, useful for testing
 #command = False # Set False to type EANs manually
-outputFile = "output.csv"
 upcDatabaseRpcKey = '' # obtain it at upcdatabase.com
 mobyGamesSearchOn = True
 defaultRegion = "ES"
@@ -109,7 +108,7 @@ def saveCSVRow(outputFile, row):
   with open(outputFile, mode='a') as csvFile:
     csv.writer(csvFile).writerow(row)
 
-def processEntry(eanInputFile):
+def processEntry(outputFile, eanInputFile):
   ean = eanInputFile.readline().rstrip()
   if not ean:
     return False
@@ -200,18 +199,26 @@ def processEntry(eanInputFile):
   return True
 
 def main():
+  if len(sys.argv) == 1:
+    print("Error: missing database file argument.",
+        "Usage: scanner.py [CSV FILE]",  sep="\n");
+    sys.exit()
+  if len(sys.argv) > 2:
+    print("Warning: multiple files provided, ignoring all but first one.",
+        "Usage: scanner.py [CSV FILE]",  sep="\n");
+  outputFile = sys.argv[1]
   if command:
     with subprocess.Popen(command, stdout=subprocess.PIPE,
         encoding='UTF-8') as proc:
       while True:
         print("Waiting for barcode scanner...")
         # Loop until there's no more ean data from subprocess
-        if not processEntry(proc.stdout):
+        if not processEntry(outputFile, proc.stdout):
           break
   else:
     while True:
       print("EAN code (empty to exit)", end=": ", flush=True)
-      if not processEntry(sys.stdin):
+      if not processEntry(outputFile, sys.stdin):
         break
 
 
