@@ -153,8 +153,10 @@ def processEntry(outputFile, eanInputFile):
       break
 
   if not found and lastIdPrefix != "":
+    # We assume the user didn't type the prefix and we use the lastIdPrefix
     id = lastIdPrefix + "-" + input
   else:
+    # The user typed the prefix and we found it in knownIdPrefixesPerSystem
     id = input
 
   if system == "":
@@ -186,8 +188,10 @@ def processEntry(outputFile, eanInputFile):
   print("Region [default=", defaultRegion, "]", sep="", end=": ", flush=True)
   region = sys.stdin.readline().rstrip().upper()
   if not region:
+    # User didn't type, use saved default
     region = defaultRegion
   else:
+    # Save typed region for the next time
     defaultRegion = region
 
   print("Comments", end=": ", flush=True);
