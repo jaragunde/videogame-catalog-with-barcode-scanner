@@ -9,7 +9,7 @@ command = ["zbarcam", "/dev/video2"] # Fetch EANs with the zbarcam tool
 #command = ["./fake-code.py"] # Fake EAN generation, useful for testing
 #command = False # Set False to type EANs manually
 outputFile = "output.csv"
-rpc_key = '' # obtain it at upcdatabase.com
+upcDatabaseRpcKey = '' # obtain it at upcdatabase.com
 mobyGamesSearchOn = True
 defaultRegion = "ES"
 
@@ -49,7 +49,7 @@ knownIdPrefixesPerSystem = {
   ],
 }
 
-def lookup(ean):
+def searchOnUpcDatabase(ean):
   print("Searching UPC database...", end=" ", flush=True)
   if ean.startswith("EAN-13:"):
     ean = ean[-13:] # the service does not expect this prefix
@@ -60,7 +60,7 @@ def lookup(ean):
   #  'ean': '4012927051122', 'pendingUpdates': 0,
   #  'lastModifiedUTC': DateTime, 'noCacheAfterUTC': DateTime}
   with xmlrpc.client.ServerProxy("https://www.upcdatabase.com/xmlrpc") as proxy:
-    params = {"rpc_key": rpc_key, "ean": ean}
+    params = {"rpc_key": upcDatabaseRpcKey, "ean": ean}
     result = proxy.lookup(params)
     if result["status"] == "success" and result["found"]:
       return result["description"]
@@ -117,8 +117,8 @@ def processEntry(eanInputFile):
 
   defaultNameMessage = " (empty to skip)"
   searchResult = False
-  if rpc_key:
-    searchResult = lookup(ean)
+  if upcDatabaseRpcKey:
+    searchResult = searchOnUpcDatabase(ean)
     if searchResult:
       print("Match!")
       defaultNameMessage = " [default=" + searchResult + "]"
