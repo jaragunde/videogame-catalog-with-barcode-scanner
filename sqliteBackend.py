@@ -17,14 +17,27 @@ def setupDatabaseFile(file):
   return db
 
 
+def clearEANPrefix(ean):
+  if ean.startswith("EAN-13:"):
+    ean = ean[-13:] # remove prefix
+  return ean
+
+
 def importFromCSVFile(db, file):
   with open(file) as csvFile:
     for row in csv.reader(csvFile):
-      ean = row[1]
-      if ean.startswith("EAN-13:"):
-        ean = ean[-13:] # remove prefix
+      ean = clearEANPrefix(row[1])
       db.execute("""INSERT INTO games
           (ean, system, name, productid, region, comment)
           VALUES (?,?,?,?,?,?)""",
           (ean, row[0], row[2], row[3], row[4], row[5]))
     db.commit()
+
+
+def saveRow(db, system, ean, name, id, region, comments):
+  ean = clearEANPrefix(ean)
+  db.execute("""INSERT INTO games
+      (ean, system, name, productid, region, comment)
+      VALUES (?,?,?,?,?,?)""",
+      (ean, system, name, id, region, comments))
+  db.commit()

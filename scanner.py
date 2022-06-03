@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import csv, requests, sys, subprocess, xmlrpc.client
 from bs4 import BeautifulSoup
+import sqliteBackend
 
 ##### Configuration
 
@@ -11,6 +12,7 @@ command = ["zbarcam", "/dev/video2"] # Fetch EANs with the zbarcam tool
 upcDatabaseRpcKey = '' # obtain it at upcdatabase.com
 mobyGamesSearchOn = True
 defaultRegion = "ES"
+backend = "CSV" # Possible values are "CSV" and "SQLite"
 
 ##### End configuration
 
@@ -104,11 +106,26 @@ def regionFromNintendoId(id):
   # apparently represent the region (e.g. UKV, ESP, EUR)
   return id[-3:]
 
+def setupDatabase(outputFile):
+  if backend == "CSV":
+    # We don't need a setup. The "db handle" is actually the file name
+    # TODO: check if file can be opened in write mode at this point
+    return outputFile
+  elif backend == "SQLite":
+    return sqliteBackend.setupDatabaseFile(outputFile)
+
+def saveRow(dbHandle, system, ean, name, id, region, comments):
+  if backend == "CSV":
+    saveCSVRow(dbHandle, [system, ean, name, id, region, comments])
+  elif backend == "SQLite":
+    sqliteBackend.saveRow(dbHandle, system, ean, name, id, region, comments)
+
 def saveCSVRow(outputFile, row):
   with open(outputFile, mode='a') as csvFile:
     csv.writer(csvFile).writerow(row)
+  print("Saved to", outputFile)
 
-def processEntry(outputFile, eanInputFile):
+def processEntry(dbHandle, eanInputFile):
   ean = eanInputFile.readline().rstrip()
   if not ean:
     return False
@@ -197,8 +214,7 @@ def processEntry(outputFile, eanInputFile):
   print("Comments", end=": ", flush=True);
   comments = sys.stdin.readline().rstrip()
 
-  saveCSVRow(outputFile, [system, ean, name, id, region, comments])
-  print("Saved to", outputFile)
+  saveRow(dbHandle, system, ean, name, id, region, comments)
 
   return True
 
@@ -210,19 +226,22 @@ def main():
   if len(sys.argv) > 2:
     print("Warning: multiple files provided, ignoring all but first one.",
         "Usage: scanner.py [CSV FILE]",  sep="\n");
+
   outputFile = sys.argv[1]
+  dbHandle = setupDatabase(outputFile)
+
   if command:
     with subprocess.Popen(command, stdout=subprocess.PIPE,
         encoding='UTF-8') as proc:
       while True:
         print("Waiting for barcode scanner...")
         # Loop until there's no more ean data from subprocess
-        if not processEntry(outputFile, proc.stdout):
+        if not processEntry(dbHandle, proc.stdout):
           break
   else:
     while True:
       print("EAN code (empty to exit)", end=": ", flush=True)
-      if not processEntry(outputFile, sys.stdin):
+      if not processEntry(dbHandle, sys.stdin):
         break
 
 

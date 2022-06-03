@@ -4,7 +4,7 @@ Videogame catalog with barcode scanner
 This is a simple script to help catalog my videogames. It can retrieve a
 barcode from the webcam using `zbarcam`, then look up the obtained EAN in
 several online services, and merge the result with some data provided by the
-user. Finally, data is saved to a local file in CSV format.
+user. Finally, data is saved to a local file in CSV format or a SQLite database.
 
 How to use
 ----------
