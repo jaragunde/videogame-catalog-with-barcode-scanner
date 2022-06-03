@@ -1,0 +1,10 @@
+# Database files (CSV and SQLite)
+*.csv
+*.sqlite
+*.db
+
+# Temporary editor files
+*~
+
+# Python cache
+__pycache__
