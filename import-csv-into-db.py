@@ -38,8 +38,6 @@ def main():
 
   db = sqliteBackend.setupDatabaseFile(databaseFile)
   for inputFile in inputFiles:
-    if "import-csv-into-db.py" in inputFile:
-      continue
     sqliteBackend.importFromCSVFile(db, inputFile)
 
 
