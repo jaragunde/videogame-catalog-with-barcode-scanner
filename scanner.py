@@ -125,11 +125,34 @@ def saveCSVRow(outputFile, row):
     csv.writer(csvFile).writerow(row)
   print("Saved to", outputFile)
 
+def findDuplicateEan(dbHandle, ean):
+  if backend == "CSV":
+    # Not implemented for CSVs
+    return False
+  elif backend == "SQLite":
+    return sqliteBackend.findDuplicateEan(dbHandle, ean)
+
 def processEntry(dbHandle, eanInputFile):
   ean = eanInputFile.readline().rstrip()
   if not ean:
     return False
   print("Code read:", ean)
+
+  duplicate = findDuplicateEan(dbHandle, ean)
+  if duplicate:
+    print("Existing entry found in DB:",
+        "EAN: %s" % duplicate["ean"],
+        "System: %s" % duplicate["system"],
+        "Name: %s" % duplicate["name"],
+        "Product ID: %s" % duplicate["productid"],
+        "Region: %s" % duplicate["region"],
+        "Comment: %s" % duplicate["comment"],
+        sep="\n\t", flush=True)
+    print("Do you want to add a new, duplicate entry? [y/n]", end=": ", flush=True)
+    input = sys.stdin.readline().strip().upper()
+    if input == "N":
+      # skip to next EAN
+      return True
 
   defaultNameMessage = " (empty to skip)"
   searchResult = False
