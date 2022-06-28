@@ -19,9 +19,7 @@ def importFromCSVFile(db, file):
 
   with open(file) as csvFile:
     for row in csv.reader(csvFile):
-      ean = sqliteBackend.clearEANPrefix(row[1])
-
-      duplicate = sqliteBackend.findDuplicateEan(db, ean)
+      duplicate = sqliteBackend.findDuplicateEan(db, row[1])
       if duplicate:
         if skipAllDuplicates:
           continue
@@ -48,13 +46,7 @@ def importFromCSVFile(db, file):
             addAllDuplicates = True
             # execute insert code below
 
-      db.execute("""INSERT INTO games
-          (ean, system, name, productid, region, comment)
-          VALUES (?,?,?,?,?,?)""",
-          (ean, row[0], row[2], row[3], row[4], row[5]))
-
-    # Commit after all entries have been processed
-    db.commit()
+      sqliteBackend.saveRow(db, row[0], row[1], row[2], row[3], row[4], row[5])
 
 
 def main():
