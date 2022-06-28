@@ -22,7 +22,7 @@ lastIdPrefix = ""
 
 # Known product ID prefixes, used to identify the system
 knownIdPrefixesPerSystem = {
-  "PS2": [
+  "PS?": [  # PSX and PS2 games use the same prefixes
     "SCES", # 1st-party, European region
     "SLES", # 3rd-party, European region
   ],
@@ -176,7 +176,11 @@ def processEntry(dbHandle, eanInputFile):
   print("Product ID [prefix=", lastIdPrefix, "]", sep="", end=": ", flush=True)
   input = sys.stdin.readline().rstrip().upper()
 
-  # identify system from product ID prefix
+  # Identify system from product ID prefix. Notice that, if the user did not
+  # type a prefix, the search for knownSystem will fail and the previously saved
+  # system will be reused.
+  # If users need to change between systems PSX <-> PS2, the workaround is to
+  # re-type the prefix to force the question.
   found = False
   global system
   for knownSystem, knownPrefixes in knownIdPrefixesPerSystem.items():
@@ -199,7 +203,7 @@ def processEntry(dbHandle, eanInputFile):
     # The user typed the prefix and we found it in knownIdPrefixesPerSystem
     id = input
 
-  if system == "":
+  if system == "" or system == "PS?":
     print("Cannot guess system from product ID, please type", end=": ",
         flush=True)
     system = sys.stdin.readline().rstrip()
