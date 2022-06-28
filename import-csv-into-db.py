@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import getopt, sys
+import csv, getopt, sys
 import sqliteBackend
 
 def printHelpAndExit():
@@ -11,6 +11,50 @@ def printHelpAndExit():
       "  -o [DB FILE], --output=[DB FILE]  REQUIRED. Output file with SQLite database.",
       sep="\n")
   sys.exit()
+
+
+def importFromCSVFile(db, file):
+  addAllDuplicates = False
+  skipAllDuplicates = False
+
+  with open(file) as csvFile:
+    for row in csv.reader(csvFile):
+      ean = sqliteBackend.clearEANPrefix(row[1])
+
+      duplicate = sqliteBackend.findDuplicateEan(db, ean)
+      if duplicate:
+        if skipAllDuplicates:
+          continue
+        elif not addAllDuplicates:
+          print("Existing entry found in DB:",
+              "EAN: %s" % duplicate["ean"],
+              "System: %s" % duplicate["system"],
+              "Name: %s" % duplicate["name"],
+              "Product ID: %s" % duplicate["productid"],
+              "Region: %s" % duplicate["region"],
+              "Comment: %s" % duplicate["comment"],
+              sep="\n\t", flush=True)
+          print("Do you want to add a new, duplicate entry",
+              "(yes/no/add all/skip all)? [y/n/a/s]", end=": ", flush=True)
+          input = sys.stdin.readline().strip().upper()
+          if input == "N":
+            # skip to next row
+            continue
+          elif input == "S":
+            skipAllDuplicates = True
+            # skip to next row
+            continue
+          elif input == "A":
+            addAllDuplicates = True
+            # execute insert code below
+
+      db.execute("""INSERT INTO games
+          (ean, system, name, productid, region, comment)
+          VALUES (?,?,?,?,?,?)""",
+          (ean, row[0], row[2], row[3], row[4], row[5]))
+
+    # Commit after all entries have been processed
+    db.commit()
 
 
 def main():
@@ -38,7 +82,8 @@ def main():
 
   db = sqliteBackend.setupDatabaseFile(databaseFile)
   for inputFile in inputFiles:
-    sqliteBackend.importFromCSVFile(db, inputFile)
+    print("Processing file: ", inputFile)
+    importFromCSVFile(db, inputFile)
 
 
 if __name__ == "__main__":
