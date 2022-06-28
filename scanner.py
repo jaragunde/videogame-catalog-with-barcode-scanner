@@ -48,6 +48,9 @@ knownIdPrefixesPerSystem = {
   "WiiU": [
     "WUP", # all regions
   ],
+  "Switch": [
+    "HAC", # all regions
+  ],
 }
 
 def searchOnUpcDatabase(ean):
@@ -226,7 +229,7 @@ def processEntry(dbHandle, eanInputFile):
       return True
 
   global defaultRegion
-  if system in ["GC","Wii","WiiU"]:
+  if system in ["GC","Wii","WiiU","Switch"]:
     defaultRegion = regionFromNintendoId(id)
 
   print("Region [default=", defaultRegion, "]", sep="", end=": ", flush=True)
