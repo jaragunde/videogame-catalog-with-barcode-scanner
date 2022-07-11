@@ -39,8 +39,14 @@ knownIdPrefixesPerSystem = {
     "UCES", # 1st-party, European region
     "ULES", # 3rd-party, European region
   ],
+  "GBA": [
+    "AGB", # all regions
+  ],
   "GC": [
     "DOL", # all regions
+  ],
+  "NDS": [
+    "NTR", # all regions
   ],
   "Wii": [
     "RVL", # all regions
@@ -229,7 +235,7 @@ def processEntry(dbHandle, eanInputFile):
       return True
 
   global defaultRegion
-  if system in ["GC","Wii","WiiU","Switch"]:
+  if system in ["GC","NDS", "Wii","WiiU","Switch"]:
     defaultRegion = regionFromNintendoId(id)
 
   print("Region [default=", defaultRegion, "]", sep="", end=": ", flush=True)
