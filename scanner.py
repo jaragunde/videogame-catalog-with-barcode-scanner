@@ -216,6 +216,8 @@ def processEntry(dbHandle, eanInputFile):
     print("Cannot guess system from product ID, please type", end=": ",
         flush=True)
     system = sys.stdin.readline().rstrip()
+  else:
+    print("Identified system:", system)
 
   if not searchResult and mobyGamesSearchOn:
     searchResult = searchOnMobyGames(id)
