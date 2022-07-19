@@ -12,13 +12,13 @@ command = ["zbarcam", "/dev/video2"] # Fetch EANs with the zbarcam tool
 upcDatabaseRpcKey = '' # obtain it at upcdatabase.com
 mobyGamesSearchOn = True
 defaultRegion = "ES"
-backend = "CSV" # Possible values are "CSV" and "SQLite"
 
 ##### End configuration
 
 # Globals
 system = ""
 lastIdPrefix = ""
+backend = "" # Possible values are "CSV" and "SQLite"
 
 # Known product ID prefixes, used to identify the system
 knownIdPrefixesPerSystem = {
@@ -256,17 +256,32 @@ def processEntry(dbHandle, eanInputFile):
 
   return True
 
+def inferBackendFromFileName(filename):
+  if filename.endswith(("CSV","csv")):
+    return "CSV"
+  if filename.endswith(("db","sqlite","sqlite3","DB","SQLITE")):
+    return "SQLite"
+  return False
+
 def main():
   if len(sys.argv) == 1:
     print("Error: missing database file argument.",
-        "Usage: scanner.py [CSV FILE]",  sep="\n");
+        "Usage: scanner.py [CSV/SQLITE FILE]",  sep="\n");
     sys.exit()
   if len(sys.argv) > 2:
     print("Warning: multiple files provided, ignoring all but first one.",
-        "Usage: scanner.py [CSV FILE]",  sep="\n");
+        "Usage: scanner.py [CSV/SQLITE FILE]",  sep="\n");
 
   outputFile = sys.argv[1]
   dbHandle = setupDatabase(outputFile)
+
+  global backend
+  backend = inferBackendFromFileName(outputFile)
+  if not backend:
+    print("Error: unsupported database file extension.",
+        "Usage: scanner.py [CSV/SQLITE FILE]",  sep="\n");
+    sys.exit()
+  print("Enabled backend:", backend)
 
   if command:
     with subprocess.Popen(command, stdout=subprocess.PIPE,
