@@ -57,6 +57,12 @@ knownIdPrefixesPerSystem = {
   "Switch": [
     "HAC", # all regions
   ],
+  "MD": [
+    "670", # all regions
+  ],
+  "Saturn": [
+    "MK", # all regions
+  ],
 }
 
 def searchOnUpcDatabase(ean):
@@ -203,6 +209,12 @@ def processEntry(dbHandle, eanInputFile):
       found = True
       system = knownSystem
       lastIdPrefix = input[:3]
+      break
+
+    if input[:2] in knownPrefixes:
+      found = True
+      system = knownSystem
+      lastIdPrefix = input[:2]
       break
 
   if not found and lastIdPrefix != "":
