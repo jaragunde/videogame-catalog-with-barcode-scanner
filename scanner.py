@@ -273,7 +273,6 @@ def main():
         "Usage: scanner.py [CSV/SQLITE FILE]",  sep="\n");
 
   outputFile = sys.argv[1]
-  dbHandle = setupDatabase(outputFile)
 
   global backend
   backend = inferBackendFromFileName(outputFile)
@@ -282,6 +281,8 @@ def main():
         "Usage: scanner.py [CSV/SQLITE FILE]",  sep="\n");
     sys.exit()
   print("Enabled backend:", backend)
+
+  dbHandle = setupDatabase(outputFile)
 
   if command:
     with subprocess.Popen(command, stdout=subprocess.PIPE,
